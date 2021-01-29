@@ -1,6 +1,7 @@
 config.ini
 .vscode
 clorox_bot
+workspace.code-workspace
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
