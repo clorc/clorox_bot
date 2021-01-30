@@ -176,7 +176,7 @@ def display_play(api_link, api_key, response, mode=0):
             beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={response.json()[0]["beatmap_id"]}&mods={mod_request}&m={mode}&a=1')
 
 
-    draw.text((850,70), f'{(float(beatmap_info.json()[0]["difficultyrating"]):.2f}', fill=(255, 255, 255), font=pt25_light, anchor='rt')
+    draw.text((850,70), f'{(float(beatmap_info.json()[0]["difficultyrating"])):.2f}', fill=(255, 255, 255), font=pt25_light, anchor='rt')
 
     try:
         pp, _, _, _, _ = osu.ppv2(aim_stars=float(beatmap_info.json()[0]["diff_aim"]), 
@@ -216,7 +216,7 @@ def display_play(api_link, api_key, response, mode=0):
     
     return img
 
-def display_plays(api_link, api_key, response, mode=0, repetitions=5):
+def display_plays(api_link, api_key, response, beatmap_id=None, mode=0, repetitions=5):
     with open(image_data) as file:
         data = json.load(file)
 
@@ -253,11 +253,14 @@ def display_plays(api_link, api_key, response, mode=0, repetitions=5):
     for i in range(repetitions):
         decal = 250*i
 
+        if beatmap_id==None:
+            beatmap_id = response.json()[i]["beatmap_id"]
+
         try:
-            beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={response.json()[i]["beatmap_id"]}&m={mode}')
+            beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={beatmap_id}&m={mode}')
             beatmap_info.json()[0]
         except IndexError:
-            beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={response.json()[i]["beatmap_id"]}&m={mode}&a=1')
+            beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={beatmap_id}&m={mode}&a=1')
 
         beatmap_cover = Image.open(requests.get(f'https://assets.ppy.sh/beatmaps/{beatmap_info.json()[0]["beatmapset_id"]}/covers/cover.jpg', stream=True).raw)
         beatmap_cover = beatmap_cover.resize((900,250))
@@ -339,10 +342,10 @@ def display_plays(api_link, api_key, response, mode=0, repetitions=5):
         if any(item in ['EZ', 'HR', 'DT', 'NC', 'HT'] for item in mod_request):
             mod_request = sum([mod_values[x] for x in mod_request if x in ['EZ', 'HR', 'DT', 'NC', 'HT']])
             try:
-                beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={response.json()[i]["beatmap_id"]}&mods={mod_request}&m={mode}')
+                beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={beatmap_id}&mods={mod_request}&m={mode}')
                 beatmap_info.json()[0]
             except IndexError:
-                beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={response.json()[i]["beatmap_id"]}&mods={mod_request}&m={mode}&a=1')
+                beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={beatmap_id}&mods={mod_request}&m={mode}&a=1')
 
 
         draw.text((500,85+decal), f'{float(beatmap_info.json()[0]["difficultyrating"]):.2f}', fill=(142, 142, 142), font=pt18_light, anchor='lt')
@@ -384,7 +387,7 @@ def display_profile(response):
 
     draw.text((16,64), 'level:', fill=(255, 255, 255), font=default_font)
     level = response.json()[0]["level"]
-    draw.text((69,64), f'{int(float(level))} ({(float(level)- int(float(level)))*100):.2f}%)', fill=(240, 90, 90), font=default_font)
+    draw.text((69,64), f'{int(float(level))} ({(( float(level)- int(float(level)) )*100):.2f}%)', fill=(240, 90, 90), font=default_font)
 
     draw.text((16,84), 'net pp:', fill=(255, 255, 255), font=default_font)
     draw.text((75,84), f'{response.json()[0]["pp_raw"]}', fill=(240, 90, 90), font=default_font)
@@ -485,14 +488,22 @@ async def on_message(message):
         prefix = json.loads(config['SERVERS'][f'{message.channel.guild.id}'])['prefix']
 
     except KeyError:
-        config['SERVERS'][f'{message.channel.guild.id}'] = '{"prefix": "$"}'  
+        config['SERVERS'][f'{message.channel.guild.id}'] = '{"prefix": "$", "last_map_sent": ""}'  
         with open('config.ini', 'w') as file:  
             config.write(file) 
         
         prefix = '$'
 
-    mydb = mysql.connect(host=config['INIT']['HOST'], user=config['INIT']['USER'], password=config['INIT']['PASSWORD'], db=config['INIT']['DATABASE']) 
+    mydb = mysql.connect(host=config['INIT']['HOST'], user=config['INIT']['USER'], password=config['INIT']['PASSWORD'], db=config['CONFIG']['DATABASE']) 
     mycursor = mydb.cursor()
+
+    try:
+        if re.findall('^https://osu.ppy.sh/beatmapsets/\d+#\w+/\d+$', message.content)[0] in message.content:
+            config['SERVERS'][f'{message.channel.guild.id}'] = '{"prefix": "' + prefix + '", "last_map_sent": "' + re.findall('\d+$', message.content)[0] + '"}'  
+            with open('config.ini', 'w') as file:  
+                config.write(file) 
+    except IndexError:
+        pass
 
     if message.content.startswith(prefix):
         msg = message.content[len(prefix):]
@@ -579,6 +590,10 @@ async def on_message(message):
             await message.channel.send('Processing...')
             message_id = message.channel.last_message_id
 
+            config['SERVERS'][f'{message.channel.guild.id}'] = '{"prefix": "' + prefix + '", "last_map_sent": "' + response.json()[0]['beatmap_id'] + '"}'  
+            with open('config.ini', 'w') as file:  
+                config.write(file) 
+
             img = display_play(api_link, api_key, response, mode)
             
             await send_image(img, message, message_id)
@@ -600,7 +615,27 @@ async def on_message(message):
             await send_image(img, message, message_id)
 
         elif msg[0] == ('compare') or msg[0] == ('c'):
-            pass
+            user, mode = await fetch_user_information(msg, mycursor, message, special_params)
+
+            last_map = json.loads(config['SERVERS'][f'{message.channel.guild.id}'])['last_map_sent']
+            
+            if last_map == '':
+                await message.channel.send('No recent map detected!')
+                return
+
+            response = requests.get(f'{api_link}get_scores?k={api_key}&u={user}&m={mode}&b={last_map}')
+
+            if response.json() == []:
+                await message.channel.send('Specified username is invalid or player has no scores on this map. \nMake sure you have no spelling mistakes and that spaces are replaced with `_`!')
+                return
+
+
+            await message.channel.send('Processing...')
+            message_id = message.channel.last_message_id
+
+            img = display_plays(mode= mode, beatmap_id= last_map, response= response, api_link= api_link, api_key= api_key, repetitions= len(response.json()))
+
+            await send_image(img, message, message_id)
 
         elif msg[0] == ('help') or msg[0] == ('h'):
             try:
