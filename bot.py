@@ -22,7 +22,7 @@ image_data = 'mod_image_data.json'
 
 lemon_milk_light = './fonts/LEMONMILK-Light.woff'
 lemon_milk_regular = './fonts/LEMONMILK-Regular.woff'
-special_characters = './DejaVuSans.ttf'
+special_characters = './fonts/DejaVuSans.ttf'
 
 def display_play(api_link, api_key, response, mode=0):
     try:
@@ -77,7 +77,7 @@ def display_play(api_link, api_key, response, mode=0):
     pt50_regular = ImageFont.truetype(lemon_milk_regular, 50)
     pt35_regular = ImageFont.truetype(lemon_milk_regular, 35)
 
-    special = ImageFont.truetype(, 25)
+    special = ImageFont.truetype(special_characters, 25)
 
     beatmap_cover = beatmap_cover.resize((900,250))
     beatmap_cover = beatmap_cover.convert('RGBA')
@@ -132,7 +132,7 @@ def display_play(api_link, api_key, response, mode=0):
 
     #--------------------   SCORES RIGHT   --------------------#
     draw.text((500,227), 'accuracy:', fill=(255, 255, 255), font=pt35_light, anchor='rt')
-    draw.text((510,227), f'{round(accuracy/count_sum*100, 2)}%', fill=(142, 142, 142), font=pt35_light, anchor='lt')
+    draw.text((510,227), f'{(accuracy/count_sum*100):.2f}%', fill=(142, 142, 142), font=pt35_light, anchor='lt')
 
     draw.text((500,295), 'combo:', fill=(255, 255, 255), font=pt35_light, anchor='rt')
     draw.text((520,295), f'{response.json()[0]["maxcombo"]}/{beatmap_info.json()[0]["max_combo"]}', fill=(142, 142, 142), font=pt35_light, anchor='lt')
@@ -176,7 +176,7 @@ def display_play(api_link, api_key, response, mode=0):
             beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={response.json()[0]["beatmap_id"]}&mods={mod_request}&m={mode}&a=1')
 
 
-    draw.text((850,70), f'{round(float(beatmap_info.json()[0]["difficultyrating"]),2)}', fill=(255, 255, 255), font=pt25_light, anchor='rt')
+    draw.text((850,70), f'{(float(beatmap_info.json()[0]["difficultyrating"]):.2f}', fill=(255, 255, 255), font=pt25_light, anchor='rt')
 
     try:
         pp, _, _, _, _ = osu.ppv2(aim_stars=float(beatmap_info.json()[0]["diff_aim"]), 
@@ -306,7 +306,7 @@ def display_plays(api_link, api_key, response, mode=0, repetitions=5):
         draw.text((500,141+decal), f'{response.json()[i]["pp"]}', fill=(142, 142, 142), font=pt18_light, anchor='lt')
 
         draw.text((490,168+decal), 'accuracy:', fill=(255, 255, 255), font=pt18_light, anchor='rt')
-        draw.text((500,168+decal), f'{round(accuracy/count_sum*100, 2)}%', fill=(142, 142, 142), font=pt18_light, anchor='lt')
+        draw.text((500,168+decal), f'{(accuracy/count_sum*100):.2f}%', fill=(142, 142, 142), font=pt18_light, anchor='lt')
 
         #--------------------   RANK   --------------------#
         if 'H' in response.json()[i]["rank"]:
@@ -345,7 +345,7 @@ def display_plays(api_link, api_key, response, mode=0, repetitions=5):
                 beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={response.json()[i]["beatmap_id"]}&mods={mod_request}&m={mode}&a=1')
 
 
-        draw.text((500,85+decal), f'{round(float(beatmap_info.json()[0]["difficultyrating"]), 2)}', fill=(142, 142, 142), font=pt18_light, anchor='lt')
+        draw.text((500,85+decal), f'{float(beatmap_info.json()[0]["difficultyrating"]):.2f}', fill=(142, 142, 142), font=pt18_light, anchor='lt')
 
         mod_bg = Image.new('RGBA', (len(mods)*49,36), color=(47, 49, 54, 255))
         a = Image.new('RGBA', (len(mods)*49,36), color=(47, 49, 54, 255))
@@ -384,13 +384,13 @@ def display_profile(response):
 
     draw.text((16,64), 'level:', fill=(255, 255, 255), font=default_font)
     level = response.json()[0]["level"]
-    draw.text((69,64), f'{int(float(level))} ({round((float(level)- int(float(level)))*100, 2)}%)', fill=(240, 90, 90), font=default_font)
+    draw.text((69,64), f'{int(float(level))} ({(float(level)- int(float(level)))*100):.2f}%)', fill=(240, 90, 90), font=default_font)
 
     draw.text((16,84), 'net pp:', fill=(255, 255, 255), font=default_font)
     draw.text((75,84), f'{response.json()[0]["pp_raw"]}', fill=(240, 90, 90), font=default_font)
 
     draw.text((16,104), 'hit accuracy:', fill=(255, 255, 255), font=default_font)
-    draw.text((129,104), f'{round(float(response.json()[0]["accuracy"]), 2)}%', fill=(240, 90, 90), font=default_font)
+    draw.text((129,104), f'{float(response.json()[0]["accuracy"]):.2f}%', fill=(240, 90, 90), font=default_font)
 
     draw.text((16,124), 'playcount:', fill=(255, 255, 255), font=default_font)
     draw.text((112,124), f'{response.json()[0]["playcount"]}', fill=(240, 90, 90), font=default_font)
