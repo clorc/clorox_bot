@@ -225,43 +225,43 @@ import pyttanko as osu
 
 # img.show()
 
-nomod = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_no-mod.d04b9d35.png', stream=True).raw).convert('RGBA'))
+# nomod = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_no-mod.d04b9d35.png', stream=True).raw).convert('RGBA'))
 
-halftime = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_half.3e707fd4.png', stream=True).raw).convert('RGBA'))
-easy = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_easy.076c7e8c.png', stream=True).raw).convert('RGBA'))
-nofail = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_no-fail.ca1a6374.png', stream=True).raw).convert('RGBA'))
+# halftime = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_half.3e707fd4.png', stream=True).raw).convert('RGBA'))
+# easy = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_easy.076c7e8c.png', stream=True).raw).convert('RGBA'))
+# nofail = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_no-fail.ca1a6374.png', stream=True).raw).convert('RGBA'))
 
-doubletime = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_double-time.348a64d3.png', stream=True).raw).convert('RGBA'))
-nightcore = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_nightcore.240c22f2.png', stream=True).raw).convert('RGBA'))
-hardrock = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_hard-rock.52c35a3a.png', stream=True).raw).convert('RGBA'))
-hidden = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_hidden.cfc32448.png', stream=True).raw).convert('RGBA'))
-suddendeath = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_sudden-death.d0df65c7.png', stream=True).raw).convert('RGBA'))
-perfect = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_perfect.460b6e49.png', stream=True).raw).convert('RGBA'))
-flashlight = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_flashlight.be8ff220.png', stream=True).raw).convert('RGBA'))
-fadein = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_fader.b863efe4.png', stream=True).raw).convert('RGBA'))
+# doubletime = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_double-time.348a64d3.png', stream=True).raw).convert('RGBA'))
+# nightcore = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_nightcore.240c22f2.png', stream=True).raw).convert('RGBA'))
+# hardrock = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_hard-rock.52c35a3a.png', stream=True).raw).convert('RGBA'))
+# hidden = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_hidden.cfc32448.png', stream=True).raw).convert('RGBA'))
+# suddendeath = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_sudden-death.d0df65c7.png', stream=True).raw).convert('RGBA'))
+# perfect = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_perfect.460b6e49.png', stream=True).raw).convert('RGBA'))
+# flashlight = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_flashlight.be8ff220.png', stream=True).raw).convert('RGBA'))
+# fadein = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_fader.b863efe4.png', stream=True).raw).convert('RGBA'))
 
-spunout = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_spun-out.989be71e.png', stream=True).raw).convert('RGBA'))
-touchdevice = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_touchdevice.e5fa4271.png', stream=True).raw).convert('RGBA'))
-mirror = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_mirror.f733b7e1.png', stream=True).raw).convert('RGBA'))
+# spunout = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_spun-out.989be71e.png', stream=True).raw).convert('RGBA'))
+# touchdevice = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_touchdevice.e5fa4271.png', stream=True).raw).convert('RGBA'))
+# mirror = np.array(Image.open(requests.get('https://osu.ppy.sh/assets/images/mod_mirror.f733b7e1.png', stream=True).raw).convert('RGBA'))
 
-mod_dict = {
-    'NM': nomod.tolist(), 
-    'HT': halftime.tolist(),
-    'EZ': easy.tolist(), 
-    'NF': nofail.tolist(),
-    'HR': hardrock.tolist(),
-    'DT': doubletime.tolist(),
-    'NC': nightcore.tolist(),
-    'HD': hidden.tolist(),
-    'SD': suddendeath.tolist(), 
-    'PF': perfect.tolist(), 
-    'FL': flashlight.tolist(),
-    'FI': fadein.tolist(),
-    'SO': spunout.tolist(),
-    'TD': touchdevice.tolist(),
-    'MR': mirror.tolist(),
-}
+# mod_dict = {
+#     'NM': nomod.tolist(), 
+#     'HT': halftime.tolist(),
+#     'EZ': easy.tolist(), 
+#     'NF': nofail.tolist(),
+#     'HR': hardrock.tolist(),
+#     'DT': doubletime.tolist(),
+#     'NC': nightcore.tolist(),
+#     'HD': hidden.tolist(),
+#     'SD': suddendeath.tolist(), 
+#     'PF': perfect.tolist(), 
+#     'FL': flashlight.tolist(),
+#     'FI': fadein.tolist(),
+#     'SO': spunout.tolist(),
+#     'TD': touchdevice.tolist(),
+#     'MR': mirror.tolist(),
+# }
 
-with open('data.json', 'w') as file:
-    mod_dict = json.dumps(mod_dict)
-    file.write(mod_dict)
+# with open('data.json', 'w') as file:
+#     mod_dict = json.dumps(mod_dict)
+#     file.write(mod_dict)
