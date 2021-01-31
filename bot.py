@@ -24,12 +24,12 @@ lemon_milk_light = './fonts/LEMONMILK-Light.woff'
 lemon_milk_regular = './fonts/LEMONMILK-Regular.woff'
 special_characters = './fonts/DejaVuSans.ttf'
 
-def display_play(api_link, api_key, response, mode=0):
+def display_play(api_link, api_key, response, response_number=0, mode=0):
     try:
-        beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={response.json()[0]["beatmap_id"]}&m={mode}')
+        beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={response.json()[response_number]["beatmap_id"]}&m={mode}')
         beatmap_info.json()[0]
     except IndexError:
-        beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={response.json()[0]["beatmap_id"]}&m={mode}&a=1')
+        beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={response.json()[response_number]["beatmap_id"]}&m={mode}&a=1')
 
     with open(image_data) as file:
         data = json.load(file)
@@ -38,8 +38,8 @@ def display_play(api_link, api_key, response, mode=0):
     black = Image.new('RGBA', (900,500), color=(0, 0, 0, 0))
 
     total_count = int(beatmap_info.json()[0]["count_normal"]) + int(beatmap_info.json()[0]["count_slider"]) + int(beatmap_info.json()[0]["count_spinner"])
-    accuracy = int(response.json()[0]["count300"]) + int(response.json()[0]["count100"])*(1/3) + int(response.json()[0]["count50"])*(1/6)
-    count_sum = int(response.json()[0]["count300"]) + int(response.json()[0]["count100"]) + int(response.json()[0]["count50"]) + int(response.json()[0]["countmiss"])
+    accuracy = int(response.json()[response_number]["count300"]) + int(response.json()[response_number]["count100"])*(1/3) + int(response.json()[response_number]["count50"])*(1/6)
+    count_sum = int(response.json()[response_number]["count300"]) + int(response.json()[response_number]["count100"]) + int(response.json()[response_number]["count50"]) + int(response.json()[response_number]["countmiss"])
 
     completion = count_sum/total_count
 
@@ -109,49 +109,51 @@ def display_play(api_link, api_key, response, mode=0):
     draw.text((30,55), f'{beatmap_info.json()[0]["creator"]}', fill=(255, 255, 255), font=pt20_light)
     draw.text((875,28), f'[{version}]', fill=(255, 255, 255), font=pt30_light, anchor='rt')
     draw.text((875,70), '★', fill=(255, 255, 255), font=special, anchor='rt')
-    draw.text((875,112), 'pp', fill=(255, 255, 255), font=pt25_light, anchor='rt')
 
     #--------------------   SCORES LEFT   --------------------#
-    draw.text((28,150), f'{" ".join(response.json()[0]["score"])}', fill=(255, 255, 255), font=pt50_regular)
+    draw.text((28,150), f'{" ".join(response.json()[response_number]["score"])}', fill=(255, 255, 255), font=pt50_regular)
 
     draw.rectangle([(30,220),(135,260)], fill=(57, 111, 244))
     draw.text((85,227), '300', fill=(47, 49, 54), font=pt35_regular, anchor='mt')
-    draw.text((155,227), f'{response.json()[0]["count300"]}', fill=(255, 255, 255), font=pt35_light, anchor='lt')
+    draw.text((155,227), f'{response.json()[response_number]["count300"]}', fill=(255, 255, 255), font=pt35_light, anchor='lt')
 
     draw.rectangle([(30,268),(135,308)], fill=(72, 248, 80))
     draw.text((85,275), '100', fill=(47, 49, 54), font=pt35_regular, anchor='mt')
-    draw.text((155,275), f'{response.json()[0]["count100"]}', fill=(255, 255, 255), font=pt35_light, anchor='lt')
+    draw.text((155,275), f'{response.json()[response_number]["count100"]}', fill=(255, 255, 255), font=pt35_light, anchor='lt')
 
     draw.rectangle([(30,316),(135,356)], fill=(245, 225, 90))
     draw.text((85,323), '50', fill=(47, 49, 54), font=pt35_regular, anchor='mt')
-    draw.text((155,323), f'{response.json()[0]["count50"]}', fill=(255, 255, 255), font=pt35_light, anchor='lt')
+    draw.text((155,323), f'{response.json()[response_number]["count50"]}', fill=(255, 255, 255), font=pt35_light, anchor='lt')
 
     draw.rectangle([(30,364),(135,404)], fill=(242, 56, 56))
     draw.text((85,371), 'miss', fill=(47, 49, 54), font=pt35_regular, anchor='mt')
-    draw.text((155,371), f'{response.json()[0]["countmiss"]}', fill=(255, 255, 255), font=pt35_light, anchor='lt')
+    draw.text((155,371), f'{response.json()[response_number]["countmiss"]}', fill=(255, 255, 255), font=pt35_light, anchor='lt')
 
     #--------------------   SCORES RIGHT   --------------------#
     draw.text((500,227), 'accuracy:', fill=(255, 255, 255), font=pt35_light, anchor='rt')
-    draw.text((510,227), f'{(accuracy/count_sum*100):.2f}%', fill=(142, 142, 142), font=pt35_light, anchor='lt')
+    draw.text((510,227), f'{round(accuracy/count_sum*100, 2)}%', fill=(142, 142, 142), font=pt35_light, anchor='lt')
 
-    draw.text((500,295), 'combo:', fill=(255, 255, 255), font=pt35_light, anchor='rt')
-    draw.text((520,295), f'{response.json()[0]["maxcombo"]}/{beatmap_info.json()[0]["max_combo"]}', fill=(142, 142, 142), font=pt35_light, anchor='lt')
-    draw.text((505,310), 'x', fill=(142, 142, 142), font=special, anchor='lt')
+    draw.text((500,275), 'combo:', fill=(255, 255, 255), font=pt35_light, anchor='rt')
+    draw.text((520,275), f'{response.json()[response_number]["maxcombo"]}/{beatmap_info.json()[0]["max_combo"]}', fill=(142, 142, 142), font=pt35_light, anchor='lt')
+    draw.text((505,290), 'x', fill=(142, 142, 142), font=special, anchor='lt')
 
-    if 'H' in response.json()[0]["rank"]:
-        rank = response.json()[0]["rank"][:-1]
+    if 'H' in response.json()[response_number]["rank"]:
+        rank = response.json()[response_number]["rank"][:-1]
     else:
-        rank = response.json()[0]["rank"]
+        rank = response.json()[response_number]["rank"]
 
-    if 'X' in response.json()[0]["rank"]:
+    if 'X' in response.json()[response_number]["rank"]:
         rank = 'SS'
 
-    draw.text((800,250), f'{rank}', fill=rank_colors[response.json()[0]["rank"]], font=pt200_regular, anchor='mt')
+    draw.text((800,250), f'{rank}', fill=rank_colors[response.json()[response_number]["rank"]], font=pt200_regular, anchor='mt')
 
     if count_sum != total_count:
-        draw.text((450,450), f'completion: {round(completion*100, 2)}%', fill=(255, 255, 255), font=pt35_light, anchor='mt')
+        draw.text((30,458), '.', fill=(255, 255, 255), font=pt50_regular, anchor='lt')
+        draw.text((50,450), f'completion: {round(completion*100, 2)}%', fill=(142, 142, 142), font=pt25_light, anchor='lt')
 
-    mod_code = int(response.json()[0]['enabled_mods'])
+    draw.text((870,458), f'{response.json()[response_number]["date"]}', fill=(142, 142, 142), font=pt25_light, anchor='rt')
+
+    mod_code = int(response.json()[response_number]['enabled_mods'])
     mod_code = list(bin(mod_code)[2:]) 
     mod_code.reverse()
 
@@ -170,37 +172,67 @@ def display_play(api_link, api_key, response, mode=0):
     if any(item in ['EZ', 'HR', 'DT', 'NC', 'HT'] for item in mod_request):
         mod_request = sum([mod_values[x] for x in mod_request if x in ['EZ', 'HR', 'DT', 'NC', 'HT']])
         try:
-            beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={response.json()[0]["beatmap_id"]}&mods={mod_request}&m={mode}')
+            beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={response.json()[response_number]["beatmap_id"]}&mods={mod_request}&m={mode}')
             beatmap_info.json()[0]
         except IndexError:
-            beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={response.json()[0]["beatmap_id"]}&mods={mod_request}&m={mode}&a=1')
+            beatmap_info = requests.get(f'{api_link}get_beatmaps?k={api_key}&b={response.json()[response_number]["beatmap_id"]}&mods={mod_request}&m={mode}&a=1')
 
 
-    draw.text((850,70), f'{(float(beatmap_info.json()[0]["difficultyrating"])):.2f}', fill=(255, 255, 255), font=pt25_light, anchor='rt')
+    draw.text((850,70), f'{round(float(beatmap_info.json()[0]["difficultyrating"]),2)}', fill=(255, 255, 255), font=pt25_light, anchor='rt')
+
+    if response_number == 0:
+        try:
+            pp, _, _, _, _ = osu.ppv2(aim_stars=float(beatmap_info.json()[0]["diff_aim"]), 
+                                    speed_stars=float(beatmap_info.json()[0]["diff_speed"]), 
+                                    max_combo=int(beatmap_info.json()[0]["max_combo"])*completion, 
+                                    nsliders=int(beatmap_info.json()[0]["count_slider"])*completion, 
+                                    ncircles=int(beatmap_info.json()[0]["count_normal"])*completion, 
+                                    nobjects=int(beatmap_info.json()[0]["count_spinner"])*completion, 
+                                    base_ar=float(beatmap_info.json()[0]["diff_approach"]), 
+                                    base_od=float(beatmap_info.json()[0]["diff_overall"]), 
+                                    mode=int(beatmap_info.json()[0]["mode"]), 
+                                    mods=int(response.json()[response_number]["enabled_mods"]), 
+                                    combo=int(response.json()[response_number]["maxcombo"]), 
+                                    n300=int(response.json()[response_number]["count300"]), 
+                                    n100=int(response.json()[response_number]["count100"]), 
+                                    n50=int(response.json()[response_number]["count50"]), 
+                                    nmiss=int(response.json()[response_number]["countmiss"]), 
+                                    score_version=1)
+            pp = round(pp, 2)
+        
+        except TypeError:
+            pp = 'NaN'
+    
+    else:
+        pp = round(float(response.json()[response_number]["pp"]), 2)
 
     try:
-        pp, _, _, _, _ = osu.ppv2(aim_stars=float(beatmap_info.json()[0]["diff_aim"]), 
-                                speed_stars=float(beatmap_info.json()[0]["diff_speed"]), 
-                                max_combo=int(beatmap_info.json()[0]["max_combo"])*completion, 
-                                nsliders=int(beatmap_info.json()[0]["count_slider"])*completion, 
-                                ncircles=int(beatmap_info.json()[0]["count_normal"])*completion, 
-                                nobjects=int(beatmap_info.json()[0]["count_spinner"])*completion, 
-                                base_ar=float(beatmap_info.json()[0]["diff_approach"]), 
-                                base_od=float(beatmap_info.json()[0]["diff_overall"]), 
-                                mode=int(beatmap_info.json()[0]["mode"]), 
-                                mods=int(response.json()[0]["enabled_mods"]), 
-                                combo=int(response.json()[0]["maxcombo"]), 
-                                n300=int(response.json()[0]["count300"]), 
-                                n100=int(response.json()[0]["count100"]), 
-                                n50=int(response.json()[0]["count50"]), 
-                                nmiss=int(response.json()[0]["countmiss"]), 
-                                score_version=1)
-        pp = round(pp, 2)
-    
+        fc_pp, _, _, _, _ = osu.ppv2(aim_stars=float(beatmap_info.json()[0]["diff_aim"]), 
+                                    speed_stars=float(beatmap_info.json()[0]["diff_speed"]), 
+                                    max_combo=int(beatmap_info.json()[0]["max_combo"]), 
+                                    nsliders=int(beatmap_info.json()[0]["count_slider"]), 
+                                    ncircles=int(beatmap_info.json()[0]["count_normal"]), 
+                                    nobjects=int(beatmap_info.json()[0]["count_spinner"]), 
+                                    base_ar=float(beatmap_info.json()[0]["diff_approach"]), 
+                                    base_od=float(beatmap_info.json()[0]["diff_overall"]), 
+                                    mode=int(beatmap_info.json()[0]["mode"]), 
+                                    mods=int(response.json()[response_number]["enabled_mods"]), 
+                                    combo=int(beatmap_info.json()[0]["max_combo"]), 
+                                    n300=int(response.json()[response_number]["count300"]) + int(response.json()[response_number]["countmiss"]), 
+                                    n100=int(response.json()[response_number]["count100"]), 
+                                    n50=int(response.json()[response_number]["count50"]), 
+                                    nmiss=0, 
+                                    score_version=1)
+        fc_pp = round(fc_pp, 2)
+        
     except TypeError:
-        pp = 'NaN'
+        fc_pp = 'NaN'
 
-    draw.text((840,112), f'{pp}', fill=(255, 255, 255), font=pt25_light, anchor='rt')
+    draw.text((500,323), 'pp:', fill=(255, 255, 255), font=pt35_light, anchor='rt')
+    draw.text((510,323), f'{pp}', fill=(142, 142, 142), font=pt35_light, anchor='lt')
+
+    draw.text((875,112), 'pp', fill=(255, 255, 255), font=pt25_light, anchor='rt')
+    draw.text((840,112), f'{fc_pp}', fill=(255, 255, 255), font=pt25_light, anchor='rt')
 
     mod_bg = Image.new('RGBA', (len(mods)*71,50), color=(47, 49, 54, 255))
     a = Image.new('RGBA', (len(mods)*71,50), color=(47, 49, 54, 255))
@@ -358,6 +390,8 @@ def display_plays(api_link, api_key, response, beatmap_id=None, mode=0, repetiti
         a = Image.alpha_composite(mod_bg, a)
 
         img.paste(a, (220, 200+decal))
+
+        beatmap_id=None
     
     return img
 
@@ -601,7 +635,19 @@ async def on_message(message):
         elif msg[0] == ('top') or msg[0] == ('osutop') or msg[0] == ('ot'):
             user, mode = await fetch_user_information(msg, mycursor, message, special_params)
 
-            response = requests.get(f'{api_link}get_user_best?k={api_key}&u={user}&m={mode}')
+            if any([x[:3] == '-p=' for x in special_params]):
+                try:
+                    place = int([x[3:] for x in special_params if x[:3] == '-p='][0])
+
+                except ValueError:
+                    await message.channel.send('Input has to be a number!')
+                    return
+
+                response = requests.get(f'{api_link}get_user_best?k={api_key}&u={user}&m={mode}&limit={place}')
+
+            else:
+                response = requests.get(f'{api_link}get_user_best?k={api_key}&u={user}&m={mode}')
+                place = 0
 
             if response.json() == []:
                 await message.channel.send('Specified username is invalid. \nMake sure you have no spelling mistakes and that spaces are replaced with `_`!')
@@ -610,7 +656,10 @@ async def on_message(message):
             await message.channel.send('Processing...')
             message_id = message.channel.last_message_id
 
-            img = display_plays(mode= mode, response= response, api_link= api_link, api_key= api_key)
+            if place == 0:
+                img = display_plays(mode= mode, response= response, api_link= api_link, api_key= api_key)
+            else:
+                img = display_play(api_link= api_link, api_key= api_key, response= response, response_number= place-1, mode= mode)
 
             await send_image(img, message, message_id)
 
