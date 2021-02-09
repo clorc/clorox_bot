@@ -3,6 +3,7 @@
 → denkst du es ist possible so ein command wie >rs -b zu machen (recent top 100 pp play)
 → more mode compatibility ✔️
 → $rs for multiplayer games
-→ display information about a specific map or last map in chat
+→ display information about a specific map or last map in chat (params: [map_id] [mods..])
+→ detect shortened beatmaps
 → pp for fc ✔️
 → compare command ✔️
